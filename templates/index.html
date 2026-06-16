@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Insights</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar or Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <div class="logo-icon">
+                    <i data-lucide="database"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>BigQuery</h1>
+                    <span>Release Insights</span>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <div id="feed-status" class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Loading...</span>
+                </div>
+                
+                <button id="refresh-btn" class="btn btn-primary" title="Refresh Release Notes">
+                    <i data-lucide="rotate-cw" id="refresh-icon"></i>
+                    <span>Refresh</span>
+                </button>
+                
+                <button id="theme-toggle" class="btn btn-icon" title="Toggle Theme">
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Section -->
+        <section class="stats-grid">
+            <div class="stat-card" data-type="all">
+                <div class="stat-icon icon-all"><i data-lucide="layers"></i></div>
+                <div class="stat-info">
+                    <h3 id="stat-total">-</h3>
+                    <p>Total Items</p>
+                </div>
+            </div>
+            <div class="stat-card" data-type="feature">
+                <div class="stat-icon icon-feature"><i data-lucide="sparkles"></i></div>
+                <div class="stat-info">
+                    <h3 id="stat-features">-</h3>
+                    <p>Features</p>
+                </div>
+            </div>
+            <div class="stat-card" data-type="change">
+                <div class="stat-icon icon-change"><i data-lucide="refresh-cw"></i></div>
+                <div class="stat-info">
+                    <h3 id="stat-changes">-</h3>
+                    <p>Changes</p>
+                </div>
+            </div>
+            <div class="stat-card" data-type="breaking">
+                <div class="stat-icon icon-breaking"><i data-lucide="alert-triangle"></i></div>
+                <div class="stat-info">
+                    <h3 id="stat-breaking">-</h3>
+                    <p>Breaking</p>
+                </div>
+            </div>
+            <div class="stat-card" data-type="issue">
+                <div class="stat-icon icon-issue"><i data-lucide="bug"></i></div>
+                <div class="stat-info">
+                    <h3 id="stat-issues">-</h3>
+                    <p>Issues</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters & Search Section -->
+        <section class="control-panel">
+            <div class="search-wrapper">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="search-input" placeholder="Search releases by keyword, feature, tag...">
+                <button id="clear-search" class="btn-clear" style="display: none;">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="filter-wrapper">
+                <span class="filter-label">Filter by:</span>
+                <div class="filter-tags">
+                    <button class="filter-tag active" data-filter="all">All Types</button>
+                    <button class="filter-tag" data-filter="Feature">Features</button>
+                    <button class="filter-tag" data-filter="Change">Changes</button>
+                    <button class="filter-tag" data-filter="Breaking">Breaking</button>
+                    <button class="filter-tag" data-filter="Issue">Issues</button>
+                    <button class="filter-tag" data-filter="Announcement">Announcements</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <main class="content-area">
+            <div id="loading-state" class="loading-state">
+                <div class="spinner"></div>
+                <p>Fetching the latest release notes from Google Cloud...</p>
+            </div>
+
+            <div id="error-state" class="error-state" style="display: none;">
+                <div class="error-icon">
+                    <i data-lucide="alert-circle"></i>
+                </div>
+                <h2>Failed to Load Release Notes</h2>
+                <p id="error-message">Could not connect to the release feed. Please check your network connection.</p>
+                <button id="retry-btn" class="btn btn-secondary">
+                    <i data-lucide="refresh-cw"></i>
+                    <span>Retry Connection</span>
+                </button>
+            </div>
+
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <div class="empty-icon">
+                    <i data-lucide="search-code"></i>
+                </div>
+                <h2>No Release Notes Found</h2>
+                <p>We couldn't find any releases matching your search criteria. Try a different keyword.</p>
+            </div>
+
+            <!-- Grid of release items -->
+            <div id="releases-grid" class="releases-grid" style="display: none;">
+                <!-- JavaScript will populate this -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>BigQuery Release Insights • Fetched from Google Cloud Feed</p>
+            <p id="last-updated-text">Last updated: Never</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
