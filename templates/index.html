@@ -114,8 +114,45 @@
         <!-- Main Content Area -->
         <main class="content-area">
             <div id="loading-state" class="loading-state">
-                <div class="spinner"></div>
-                <p>Fetching the latest release notes from Google Cloud...</p>
+                <div class="loading-title">
+                    <div class="spinner-small"></div>
+                    <p>Fetching the latest release notes from Google Cloud...</p>
+                </div>
+                <div class="skeleton-grid">
+                    <div class="skeleton-card">
+                        <div class="skeleton-header">
+                            <div class="skeleton-tag shimmer"></div>
+                            <div class="skeleton-date shimmer"></div>
+                        </div>
+                        <div class="skeleton-body">
+                            <div class="skeleton-line shimmer" style="width: 85%;"></div>
+                            <div class="skeleton-line shimmer" style="width: 60%;"></div>
+                            <div class="skeleton-line shimmer" style="width: 45%;"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-header">
+                            <div class="skeleton-tag shimmer"></div>
+                            <div class="skeleton-date shimmer"></div>
+                        </div>
+                        <div class="skeleton-body">
+                            <div class="skeleton-line shimmer" style="width: 90%;"></div>
+                            <div class="skeleton-line shimmer" style="width: 75%;"></div>
+                            <div class="skeleton-line shimmer" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-header">
+                            <div class="skeleton-tag shimmer"></div>
+                            <div class="skeleton-date shimmer"></div>
+                        </div>
+                        <div class="skeleton-body">
+                            <div class="skeleton-line shimmer" style="width: 80%;"></div>
+                            <div class="skeleton-line shimmer" style="width: 70%;"></div>
+                            <div class="skeleton-line shimmer" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="error-state" class="error-state" style="display: none;">
@@ -151,6 +188,7 @@
         </footer>
     </div>
 
+    <div id="toast-container" class="toast-container"></div>
     <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

@@ -205,11 +205,19 @@ async function fetchReleases(forceRefresh = false) {
         updateStats();
         applyFilterAndSearch();
         
+        // Success Toast Notification
+        if (forceRefresh) {
+            showToast('Release notes successfully refreshed!', 'success');
+        } else {
+            showToast(`Loaded ${state.releases.length} releases successfully.`, 'info');
+        }
+        
     } catch (error) {
         console.error('Error fetching release notes:', error);
         DOM.errorMessage.textContent = error.message || 'Could not connect to the release feed. Please check your network connection.';
         showState('error');
         updateStatusIndicator('error', error.message);
+        showToast('Failed to fetch release notes: ' + error.message, 'error');
     } finally {
         state.isLoading = false;
         DOM.refreshIcon.classList.remove('spinning');
@@ -404,6 +412,9 @@ async function copyRelease(date, type, contentHtml, copyBtn) {
     try {
         await navigator.clipboard.writeText(formattedText);
         
+        // Success Toast
+        showToast('Release copied to clipboard!', 'success');
+        
         // Success micro-interaction
         const icon = copyBtn.querySelector('i');
         copyBtn.title = "Copied!";
@@ -420,6 +431,7 @@ async function copyRelease(date, type, contentHtml, copyBtn) {
         
     } catch (err) {
         console.error('Failed to copy text: ', err);
+        showToast('Failed to copy to clipboard', 'error');
     }
 }
 
@@ -468,4 +480,40 @@ function exportToCsv() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    
+    // Success Toast
+    showToast(`Exported ${state.filteredReleases.length} releases to CSV!`, 'success');
+}
+
+// Display a modern Toast notification
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    
+    let iconName = 'info';
+    if (type === 'success') iconName = 'check-circle';
+    else if (type === 'error') iconName = 'alert-circle';
+    
+    toast.innerHTML = `
+        <i data-lucide="${iconName}"></i>
+        <span>${message}</span>
+    `;
+    
+    container.appendChild(toast);
+    lucide.createIcons();
+    
+    // Force reflow to trigger CSS transitions
+    toast.offsetHeight;
+    toast.classList.add('show');
+    
+    // Auto-remove after 3.5 seconds
+    setTimeout(() => {
+        toast.classList.replace('show', 'hide');
+        toast.addEventListener('transitionend', () => {
+            toast.remove();
+        });
+    }, 3500);
 }
