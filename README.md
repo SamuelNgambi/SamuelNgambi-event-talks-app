@@ -11,6 +11,8 @@ Une application web moderne et élégante développée avec **Python Flask** et 
 - **Recherche & Filtrage Instantanés** : Recherche textuelle en direct et filtrage par type sur le client sans requêtes supplémentaires.
 - **Tableau de Bord Statistique** : Visualisation des métriques clés (nombre total de nouveautés, changements, problèmes en cours) avec filtrage au clic sur les compteurs.
 - **Partage Twitter/X intégré** : Formatage automatique d'une release avec nettoyage des balises HTML, intégration de hashtags, lien officiel et troncature intelligente à 280 caractères.
+- **Copie Presse-papiers** : Bouton sur chaque carte pour copier la release au format texte structuré (avec la date, le type et le lien), avec un retour visuel vert de confirmation (icône temporaire).
+- **Export CSV Dynamique** : Bouton dans l'en-tête pour télécharger instantanément la liste des releases actuellement filtrées/recherchées au format CSV.
 - **Design Premium & Responsive** : Thème sombre (par défaut) et thème clair, animations fluides lors du chargement ou du filtrage, et adaptation automatique pour mobiles et tablettes.
 
 ---

@@ -24,6 +24,7 @@ const DOM = {
     refreshIcon: document.getElementById('refresh-icon'),
     retryBtn: document.getElementById('retry-btn'),
     themeToggle: document.getElementById('theme-toggle'),
+    exportCsvBtn: document.getElementById('export-csv-btn'),
     
     feedStatus: document.getElementById('feed-status'),
     lastUpdatedText: document.getElementById('last-updated-text'),
@@ -109,8 +110,13 @@ function setupEventListeners() {
     
     // Theme Toggle
     DOM.themeToggle.addEventListener('click', toggleTheme);
+    
+    // Export CSV
+    if (DOM.exportCsvBtn) {
+        DOM.exportCsvBtn.addEventListener('click', exportToCsv);
+    }
 
-    // Releases grid click delegation (for Tweet button)
+    // Releases grid click delegation (for Tweet & Copy buttons)
     DOM.releasesGrid.addEventListener('click', (e) => {
         const tweetBtn = e.target.closest('.btn-tweet');
         if (tweetBtn) {
@@ -119,6 +125,16 @@ function setupEventListeners() {
             const item = state.releases.find(r => r.id === id);
             if (item) {
                 tweetRelease(item.date, item.type, item.content, item.link);
+            }
+        }
+
+        const copyBtn = e.target.closest('.btn-copy');
+        if (copyBtn) {
+            const card = copyBtn.closest('.release-card');
+            const id = card.getAttribute('data-id');
+            const item = state.releases.find(r => r.id === id);
+            if (item) {
+                copyRelease(item.date, item.type, item.content, copyBtn);
             }
         }
     });
@@ -259,6 +275,9 @@ function renderReleases() {
                     </span>
                 </div>
                 <div class="card-actions">
+                    <button class="btn-copy" title="Copy text to clipboard">
+                        <i data-lucide="copy"></i>
+                    </button>
                     <button class="btn-tweet" title="Tweet about this">
                         <i data-lucide="twitter"></i>
                     </button>
@@ -371,4 +390,82 @@ function tweetRelease(date, type, contentHtml, link) {
     const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(link)}`;
     
     window.open(tweetUrl, '_blank', 'noopener,noreferrer');
+}
+
+// Copy release content to clipboard with micro-interaction feedback
+async function copyRelease(date, type, contentHtml, copyBtn) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = contentHtml;
+    let plainText = tempDiv.textContent || tempDiv.innerText || "";
+    plainText = plainText.replace(/\s+/g, ' ').trim();
+    
+    const formattedText = `BigQuery Release (${date}) - ${type}:\n${plainText}\nLink: ${copyBtn.closest('.release-card').querySelector('a')?.href || 'N/A'}`;
+    
+    try {
+        await navigator.clipboard.writeText(formattedText);
+        
+        // Success micro-interaction
+        const icon = copyBtn.querySelector('i');
+        copyBtn.title = "Copied!";
+        copyBtn.classList.add('copied');
+        icon.setAttribute('data-lucide', 'check');
+        lucide.createIcons();
+        
+        setTimeout(() => {
+            copyBtn.title = "Copy text to clipboard";
+            copyBtn.classList.remove('copied');
+            icon.setAttribute('data-lucide', 'copy');
+            lucide.createIcons();
+        }, 1500);
+        
+    } catch (err) {
+        console.error('Failed to copy text: ', err);
+    }
+}
+
+// Export currently filtered list of releases to CSV format
+function exportToCsv() {
+    if (state.filteredReleases.length === 0) return;
+    
+    const headers = ["ID", "Date", "Type", "Link", "Content"];
+    
+    const rows = state.filteredReleases.map(item => {
+        // Strip HTML tags for clean text content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = item.content;
+        let plainText = tempDiv.textContent || tempDiv.innerText || "";
+        plainText = plainText.replace(/\s+/g, ' ').replace(/"/g, '""').trim(); // Escape double quotes
+        
+        const escapedDate = item.date.replace(/"/g, '""');
+        const escapedType = item.type.replace(/"/g, '""');
+        const escapedLink = item.link.replace(/"/g, '""');
+        
+        return [
+            `"${item.id}"`,
+            `"${escapedDate}"`,
+            `"${escapedType}"`,
+            `"${escapedLink}"`,
+            `"${plainText}"`
+        ];
+    });
+    
+    // Combine header and rows
+    const csvContent = [
+        headers.map(h => `"${h}"`).join(','),
+        ...rows.map(r => r.join(','))
+    ].join('\n');
+    
+    // Create download trigger
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    
+    const dateStr = new Date().toISOString().slice(0, 10);
+    link.setAttribute("download", `bigquery_releases_${state.currentFilter}_${dateStr}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

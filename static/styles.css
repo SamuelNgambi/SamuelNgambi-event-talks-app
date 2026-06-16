@@ -696,7 +696,7 @@ body {
     gap: 0.4rem;
 }
 
-.btn-link, .btn-tweet {
+.btn-link, .btn-tweet, .btn-copy {
     color: var(--text-muted);
     background: none;
     border: none;
@@ -719,7 +719,17 @@ body {
     background-color: var(--border-color);
 }
 
-.btn-link i, .btn-tweet i {
+.btn-copy:hover {
+    color: var(--primary);
+    background-color: var(--border-color);
+}
+
+.btn-copy.copied {
+    color: #10b981 !important;
+    background-color: var(--border-color);
+}
+
+.btn-link i, .btn-tweet i, .btn-copy i {
     width: 18px;
     height: 18px;
 }
